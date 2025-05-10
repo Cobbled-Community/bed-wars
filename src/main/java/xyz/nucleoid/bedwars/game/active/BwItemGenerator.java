@@ -157,7 +157,7 @@ public final class BwItemGenerator {
             ItemStack stack = entity.getStack();
 
             player.giveItemStack(stack.copy());
-            player.networkHandler.sendPacket(entity.createSpawnPacket(new EntityTrackerEntry(world, entity, 1, true, (c) -> {})));
+            player.networkHandler.sendPacket(entity.createSpawnPacket(new EntityTrackerEntry(world, entity, 1, true, (c) -> {}, (a, b) -> {})));
             player.networkHandler.sendPacket(new ItemPickupAnimationS2CPacket(entity.getId(), player.getId(), stack.getCount()));
 
             player.getInventory().markDirty();

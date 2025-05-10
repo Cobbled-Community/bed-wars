@@ -6,11 +6,10 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.SwordItem;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -88,8 +87,8 @@ public final class BwPlayerLogic {
             return;
         }
 
-        this.applyEnchantments(player, stack -> stack.getItem() instanceof SwordItem, Enchantments.SHARPNESS, teamState.swordSharpness);
-        this.applyEnchantments(player, stack -> stack.getItem() instanceof ArmorItem, Enchantments.PROTECTION, teamState.armorProtection);
+        this.applyEnchantments(player, stack -> stack.isIn(ItemTags.SWORDS), Enchantments.SHARPNESS, teamState.swordSharpness);
+        this.applyEnchantments(player, stack -> stack.isIn(ItemTags.ARMOR_ENCHANTABLE), Enchantments.PROTECTION, teamState.armorProtection);
     }
 
     private void applyEnchantments(ServerPlayerEntity player, Predicate<ItemStack> predicate, RegistryKey<Enchantment> enchantment, int level) {

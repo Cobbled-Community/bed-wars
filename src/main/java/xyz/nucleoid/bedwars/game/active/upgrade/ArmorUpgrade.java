@@ -39,16 +39,17 @@ public final class ArmorUpgrade implements Upgrade {
         };
 
         for (int i = 0; i < armorStacks.length; i++) {
-            int slot = ARMOR_SLOTS[i].getEntitySlotId();
+            var slot = ARMOR_SLOTS[i];
             ItemStack stack = game.createArmor(participant.team.config().applyDye(armorStacks[i]));
-            player.getInventory().armor.set(slot, stack);
+            player.equipStack(slot, stack);
+            //player.setQ.getInventory().armor.set(slot, stack);
         }
     }
 
     @Override
     public void removeFrom(BwActive game, ServerPlayerEntity player) {
         for (EquipmentSlot slot : ARMOR_SLOTS) {
-            player.getInventory().armor.set(slot.getEntitySlotId(), ItemStack.EMPTY);
+            player.equipStack(slot, ItemStack.EMPTY);
         }
     }
 

@@ -262,9 +262,9 @@ public final class BwMap {
         }
 
         private static Direction getDirectionForRegion(TemplateRegion region) {
-            String key = region.getData().getString("direction");
+            String key = region.getData().getString("direction", "");
             for (Direction direction : Direction.values()) {
-                if (direction.getName().equalsIgnoreCase(key)) {
+                if (direction.getId().equalsIgnoreCase(key)) {
                     return direction;
                 }
             }
