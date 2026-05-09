@@ -63,7 +63,7 @@ public final class BwActive {
     public static final long RESPAWN_TICKS = 20 * RESPAWN_TIME_SECONDS;
     public static final long CLOSE_TICKS = 10 * 20;
 
-    public final ServerLevel world;
+    public final ServerLevel level;
     public final GameSpace gameSpace;
 
     public final BwMap map;
@@ -94,8 +94,8 @@ public final class BwActive {
 
     final List<MovingCloud> movingClouds = new ArrayList<>();
 
-    private BwActive(ServerLevel world, GameActivity activity, BwMap map, BwConfig config, TeamManager teams, GlobalWidgets widgets) {
-        this.world = world;
+    private BwActive(ServerLevel level, GameActivity activity, BwMap map, BwConfig config, TeamManager teams, GlobalWidgets widgets) {
+        this.level = level;
         this.gameSpace = activity.getGameSpace();
 
         this.map = map;
@@ -111,19 +111,19 @@ public final class BwActive {
         this.winStateLogic = new BwWinStateLogic(this);
         this.mapLogic = new BwMapLogic(this);
         this.playerLogic = new BwPlayerLogic(this);
-        this.spawnLogic = new BwSpawnLogic(this.world, map);
+        this.spawnLogic = new BwSpawnLogic(this.level, map);
         this.bedDestruction = new BwBedDestruction(widgets);
         this.interactions = new BwInteractions(this);
     }
 
-    public static void open(ServerLevel world, GameSpace gameSpace, BwMap map, BwConfig config, Multimap<GameTeamKey, ServerPlayer> players) {
+    public static void open(ServerLevel level, GameSpace gameSpace, BwMap map, BwConfig config, Multimap<GameTeamKey, ServerPlayer> players) {
         gameSpace.setActivity(activity -> {
             TeamManager teamManager = TeamManager.addTo(activity);
             GlobalWidgets widgets = GlobalWidgets.addTo(activity);
 
             TeamChat.addTo(activity, teamManager);
 
-            BwActive active = new BwActive(world, activity, map, config, teamManager, widgets);
+            BwActive active = new BwActive(level, activity, map, config, teamManager, widgets);
             active.addTeams(config.teams());
             active.addPlayers(players);
 
@@ -198,14 +198,14 @@ public final class BwActive {
             }
         });
 
-        this.map.spawnShopkeepers(this.world, this, this.config);
+        this.map.spawnShopkeepers(this.level, this, this.config);
         this.triggerModifiers(BwGameTriggers.GAME_RUNNING);
 
-        this.startTime = this.world.getGameTime();
+        this.startTime = this.level.getGameTime();
     }
 
     private JoinAcceptorResult acceptPlayer(JoinAcceptor offer) {
-        return offer.teleport(this.world, this.map.getCenterSpawn())
+        return offer.teleport(this.level, this.map.getCenterSpawn())
                 .thenRunForEach((player, intent) -> {
                     this.spawnLogic.resetPlayer(player, GameType.SPECTATOR);
                     BwParticipant participant = this.participantBy(player);
@@ -256,7 +256,7 @@ public final class BwActive {
             return;
         }
 
-        long time = this.world.getGameTime();
+        long time = this.level.getGameTime();
 
         PlayerSet players = this.gameSpace.getPlayers();
 
@@ -284,13 +284,13 @@ public final class BwActive {
         BwWinStateLogic.WinResult winResult = this.tickActive();
         if (winResult != null) {
             this.winningTeam = winResult.team();
-            this.closeTime = this.world.getGameTime() + CLOSE_TICKS;
+            this.closeTime = this.level.getGameTime() + CLOSE_TICKS;
         }
     }
 
     @Nullable
     private BwWinStateLogic.WinResult tickActive() {
-        long time = this.world.getGameTime();
+        long time = this.level.getGameTime();
 
         if (time - this.lastWinCheck > 20) {
             BwWinStateLogic.WinResult winResult = this.winStateLogic.checkWinResult();
@@ -322,11 +322,11 @@ public final class BwActive {
             this.spawnFireworks(this.winningTeam);
         }
 
-        return this.world.getGameTime() >= this.closeTime;
+        return this.level.getGameTime() >= this.closeTime;
     }
 
     private void spawnFireworks(GameTeam team) {
-        RandomSource random = this.world.random;
+        RandomSource random = this.level.getRandom();
 
         if (random.nextInt(18) == 0) {
             List<ServerPlayer> players = Lists.newArrayList(this.players());
@@ -335,14 +335,14 @@ public final class BwActive {
             int flight = random.nextInt(3);
             var type = random.nextInt(4) == 0 ? FireworkExplosion.Shape.STAR : FireworkExplosion.Shape.BURST;
             FireworkRocketEntity firework = new FireworkRocketEntity(
-                    this.world,
+                    this.level,
                     player.getX(),
                     player.getEyeY(),
                     player.getZ(),
                     team.config().createFirework(flight, type)
             );
 
-            this.world.addFreshEntity(firework);
+            this.level.addFreshEntity(firework);
         }
     }
 

@@ -33,9 +33,9 @@ public class ExplosionDamageCalculatorMixin {
             CallbackInfoReturnable<Optional<Float>> ci
     ) {
         if (blockView instanceof ServerLevelAccessor) {
-            ServerLevel world = ((ServerLevelAccessor) blockView).getLevel();
+            ServerLevel level = ((ServerLevelAccessor) blockView).getLevel();
 
-            var gameSpace = GameSpaceManager.get().byWorld(world);
+            var gameSpace = GameSpaceManager.get().byLevel(level);
             if (gameSpace != null) {
                 var result = gameSpace.getBehavior().testRule(BedWars.BLAST_PROOF_GLASS_RULE);
                 if (result == EventResult.ALLOW) {

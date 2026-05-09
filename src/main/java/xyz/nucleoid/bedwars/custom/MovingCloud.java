@@ -16,7 +16,7 @@ public final class MovingCloud {
 
     private static final int MAX_AGE = 20 * 60;
 
-    private final ServerLevel world;
+    private final ServerLevel level;
     private Vec3 pos;
     private final Vec3 movePerTick;
 
@@ -26,8 +26,8 @@ public final class MovingCloud {
     private int pauseTicks = PAUSE_TICKS;
     private int stoppedTicks;
 
-    public MovingCloud(ServerLevel world, BlockPos pos, Direction direction) {
-        this.world = world;
+    public MovingCloud(ServerLevel level, BlockPos pos, Direction direction) {
+        this.level = level;
         this.pos = Vec3.atCenterOf(pos);
         this.movePerTick = new Vec3(
                 direction.getStepX() * MOVE_PER_TICK,
@@ -88,7 +88,7 @@ public final class MovingCloud {
     }
 
     private void spawnParticles() {
-        RandomSource random = this.world.random;
+        RandomSource random = this.level.getRandom();
 
         double centerX = this.pos.x + this.movePerTick.x * 20.0;
         double centerZ = this.pos.z + this.movePerTick.z * 20.0;
@@ -98,28 +98,28 @@ public final class MovingCloud {
             double x = centerX + random.nextGaussian() * 0.5;
             double z = centerZ + random.nextGaussian() * 0.5;
 
-            this.world.sendParticles(ParticleTypes.CLOUD, x, y, z, 1, 0.0, 0.0, 0.0, 0.0);
+            this.level.sendParticles(ParticleTypes.CLOUD, x, y, z, 1, 0.0, 0.0, 0.0, 0.0);
         }
     }
 
     private void removePlatform(BlockPos origin) {
         BlockBounds platform = this.getPlatformAt(origin);
         for (BlockPos pos : platform) {
-            if (this.world.getBlockState(pos).getBlock() == Blocks.BARRIER) {
-                this.world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+            if (this.level.getBlockState(pos).getBlock() == Blocks.BARRIER) {
+                this.level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
             }
         }
     }
 
     private boolean tryAddPlatform(BlockPos origin) {
-        if (!this.world.isEmptyBlock(origin)) {
+        if (!this.level.isEmptyBlock(origin)) {
             return false;
         }
 
         BlockBounds platform = this.getPlatformAt(origin);
         for (BlockPos pos : platform) {
-            if (this.world.isEmptyBlock(pos)) {
-                this.world.setBlockAndUpdate(pos, Blocks.BARRIER.defaultBlockState());
+            if (this.level.isEmptyBlock(pos)) {
+                this.level.setBlockAndUpdate(pos, Blocks.BARRIER.defaultBlockState());
             }
         }
 

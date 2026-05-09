@@ -35,13 +35,13 @@ import xyz.nucleoid.stimuli.event.item.ItemUseEvent;
 
 public final class BwInteractions {
     private final BwActive game;
-    private final ServerLevel world;
+    private final ServerLevel level;
 
     private final BwTreeChopper treeChopper = new BwTreeChopper();
 
     public BwInteractions(BwActive game) {
         this.game = game;
-        this.world = game.world;
+        this.level = game.level;
     }
 
     public void addTo(GameActivity activity) {
@@ -50,7 +50,7 @@ public final class BwInteractions {
         activity.listen(ItemUseEvent.EVENT, this::onUseItem);
     }
 
-    private EventResult onBreakBlock(ServerPlayer player, ServerLevel world, BlockPos pos) {
+    private EventResult onBreakBlock(ServerPlayer player, ServerLevel level, BlockPos pos) {
         if (this.game.map.isProtectedBlock(pos)) {
             for (var team : this.game.teams()) {
                 var bed = this.game.map.getTeamRegions(team.key()).bed();
@@ -62,7 +62,7 @@ public final class BwInteractions {
             return EventResult.DENY;
         }
 
-        if (this.treeChopper.onBreakBlock(player, world, pos)) {
+        if (this.treeChopper.onBreakBlock(player, level, pos)) {
             return EventResult.DENY;
         }
 
@@ -80,7 +80,7 @@ public final class BwInteractions {
                 return InteractionResult.SUCCESS;
             }
 
-            BlockState state = this.world.getBlockState(pos);
+            BlockState state = this.level.getBlockState(pos);
             if (state.getBlock() instanceof AbstractChestBlock) {
                 return this.onUseChest(player, participant, pos);
             } else if (state.is(BlockTags.BEDS)) {
@@ -106,7 +106,7 @@ public final class BwInteractions {
             return InteractionResult.PASS;
         }
 
-        player.displayClientMessage(Component.translatable("text.bedwars.cannot_open_chest").withStyle(ChatFormatting.RED), true);
+        player.sendSystemMessage(Component.translatable("text.bedwars.cannot_open_chest").withStyle(ChatFormatting.RED), true);
 
         return InteractionResult.FAIL;
     }
@@ -142,10 +142,10 @@ public final class BwInteractions {
     private InteractionResult onUseFireball(ServerPlayer player, ItemStack stack) {
         Vec3 dir = player.getViewVector(1.0F);
 
-        BwFireballEntity fireball = new BwFireballEntity(this.world, player, dir.x * 0.5, dir.y * 0.5, dir.z * 0.5, 2);
+        BwFireballEntity fireball = new BwFireballEntity(this.level, player, dir.x * 0.5, dir.y * 0.5, dir.z * 0.5, 2);
         fireball.absSnapTo(player.getX() + dir.x, player.getEyeY() + dir.y, fireball.getZ() + dir.z);
 
-        this.world.addFreshEntity(fireball);
+        this.level.addFreshEntity(fireball);
 
         player.getCooldowns().addCooldown(stack, 20);
         stack.shrink(1);
@@ -154,10 +154,10 @@ public final class BwInteractions {
     }
 
     private InteractionResult onUseBridgeEgg(ServerPlayer player, ItemStack stack) {
-        this.world.playSound(
+        this.level.playSound(
                 null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.EGG_THROW, SoundSource.PLAYERS,
-                0.5F, 0.4F / (this.world.random.nextFloat() * 0.4F + 0.8F)
+                0.5F, 0.4F / (this.level.getRandom().nextFloat() * 0.4F + 0.8F)
         );
 
         // Get player wool color
@@ -169,11 +169,11 @@ public final class BwInteractions {
         BlockState state = ColoredBlocks.wool(team.config().blockDyeColor()).defaultBlockState();
 
         // Spawn egg
-        BridgeEggEntity eggEntity = new BridgeEggEntity(this.world, player, state);
+        BridgeEggEntity eggEntity = new BridgeEggEntity(this.level, player, state);
         eggEntity.setItem(stack);
         eggEntity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
 
-        this.world.addFreshEntity(eggEntity);
+        this.level.addFreshEntity(eggEntity);
 
         if (!player.getAbilities().instabuild) {
             stack.shrink(1);
@@ -183,19 +183,19 @@ public final class BwInteractions {
     }
 
     private InteractionResult onUseMovingCloud(ServerPlayer player, ItemStack stack) {
-        this.world.playSound(
+        this.level.playSound(
                 null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.EGG_THROW, SoundSource.PLAYERS,
-                0.5F, 0.4F / (this.world.random.nextFloat() * 0.4F + 0.8F)
+                0.5F, 0.4F / (this.level.getRandom().nextFloat() * 0.4F + 0.8F)
         );
 
         Direction direction = player.getDirection();
         BlockPos blockPos = player.blockPosition().below().relative(direction);
-        if (!this.world.isEmptyBlock(blockPos)) {
+        if (!this.level.isEmptyBlock(blockPos)) {
             return InteractionResult.PASS;
         }
 
-        MovingCloud cloud = new MovingCloud(this.world, blockPos, direction);
+        MovingCloud cloud = new MovingCloud(this.level, blockPos, direction);
         this.game.movingClouds.add(cloud);
 
         if (!player.getAbilities().instabuild) {

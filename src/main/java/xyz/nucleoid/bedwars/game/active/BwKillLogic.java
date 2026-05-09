@@ -75,7 +75,7 @@ public final class BwKillLogic {
 
         if (attackerParticipant == null) {
             AttackRecord lastAttack = participant.lastAttack;
-            if (lastAttack != null && lastAttack.isValid(this.game.world.getGameTime())) {
+            if (lastAttack != null && lastAttack.isValid(this.game.level.getGameTime())) {
                 attackerParticipant = this.game.participantBy(lastAttack.player);
             }
         }
@@ -127,7 +127,7 @@ public final class BwKillLogic {
     }
 
     private void dropEnderChest(ServerPlayer player, BwParticipant participant) {
-        ServerLevel world = this.game.world;
+        ServerLevel level = this.game.level;
         PlayerEnderChestContainer enderChest = player.getEnderChestInventory();
 
         BwMap.TeamRegions teamRegions = this.game.map.getTeamRegions(participant.team.key());
@@ -137,7 +137,7 @@ public final class BwKillLogic {
             for (int slot = 0; slot < enderChest.getContainerSize(); slot++) {
                 ItemStack stack = enderChest.removeItemNoUpdate(slot);
                 if (!stack.isEmpty()) {
-                    world.addFreshEntity(new ItemEntity(world, dropSpawn.x, dropSpawn.y + 0.5, dropSpawn.z, stack));
+                    level.addFreshEntity(new ItemEntity(level, dropSpawn.x, dropSpawn.y + 0.5, dropSpawn.z, stack));
                 }
             }
         }

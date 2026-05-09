@@ -9,8 +9,8 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 
 public final class BwFireballEntity extends LargeFireball {
-    public BwFireballEntity(Level world, LivingEntity owner, double velocityX, double velocityY, double velocityZ, int explosionPower) {
-        super(world, owner, new Vec3(velocityX, velocityY, velocityZ), explosionPower);
+    public BwFireballEntity(Level level, LivingEntity owner, double velocityX, double velocityY, double velocityZ, int explosionPower) {
+        super(level, owner, new Vec3(velocityX, velocityY, velocityZ), explosionPower);
     }
 
     @Override

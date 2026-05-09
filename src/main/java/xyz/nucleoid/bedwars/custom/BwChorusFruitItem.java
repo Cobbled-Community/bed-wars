@@ -1,6 +1,8 @@
 package xyz.nucleoid.bedwars.custom;
 
 import eu.pb4.polymer.core.api.item.PolymerItem;
+import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -17,7 +19,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
-import xyz.nucleoid.packettweaker.PacketContext;
 
 public final class BwChorusFruitItem extends Item implements PolymerItem {
     private static final int ATTEMPTS = 32;
@@ -28,8 +29,8 @@ public final class BwChorusFruitItem extends Item implements PolymerItem {
     }
 
     @Override
-    public ItemStack finishUsingItem(ItemStack stack, Level world, LivingEntity entity) {
-        if (!world.isClientSide()) {
+    public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
+        if (!level.isClientSide()) {
             stack.shrink(1);
 
             double originX = entity.getX();
@@ -48,7 +49,7 @@ public final class BwChorusFruitItem extends Item implements PolymerItem {
 
                 if (entity.randomTeleport(target.x, target.y, target.z, true)) {
                     SoundEvent sound = SoundEvents.CHORUS_FRUIT_TELEPORT;
-                    world.playSound(null, originX, originY, originZ, sound, SoundSource.PLAYERS, 1.0F, 1.0F);
+                    level.playSound(null, originX, originY, originZ, sound, SoundSource.PLAYERS, 1.0F, 1.0F);
                     entity.playSound(sound, 1.0F, 1.0F);
                     break;
                 }
@@ -90,13 +91,12 @@ public final class BwChorusFruitItem extends Item implements PolymerItem {
 
     @Override
     public Component getName(ItemStack stack) {
-        var name = stack.getComponentsPatch().get(DataComponents.ITEM_NAME);
-        return name != null && name.isPresent() ? name.get() : Items.CHORUS_FRUIT.getName();
+        var name = stack.getComponents().get(DataComponents.ITEM_NAME);
+        return name != null ? name: Items.CHORUS_FRUIT.getName(Items.CHORUS_FRUIT.getDefaultInstance());
     }
-
     @Override
     @Nullable
-    public Identifier getPolymerItemModel(ItemStack stack, PacketContext context) {
+    public Identifier getPolymerItemModel(ItemStack stack, PacketContext context, HolderLookup.Provider lookup) {
         return null;
     }
 }

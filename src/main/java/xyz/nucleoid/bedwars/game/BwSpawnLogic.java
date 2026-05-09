@@ -8,11 +8,11 @@ import net.minecraft.world.level.GameType;
 import java.util.Set;
 
 public final class BwSpawnLogic {
-    private final ServerLevel world;
+    private final ServerLevel level;
     private final BwMap map;
 
-    public BwSpawnLogic(ServerLevel world, BwMap map) {
-        this.world = world;
+    public BwSpawnLogic(ServerLevel level, BwMap map) {
+        this.level = level;
         this.map = map;
     }
 
@@ -34,7 +34,7 @@ public final class BwSpawnLogic {
 
     public void spawnAtCenter(ServerPlayer player) {
         Vec3 pos = this.map.getCenterSpawn();
-        player.teleportTo(this.world, pos.x, pos.y + 0.5, pos.z, Set.of(), 0.0F, 0.0F, false);
+        player.teleportTo(this.level, pos.x, pos.y + 0.5, pos.z, Set.of(), 0.0F, 0.0F, false);
         player.connection.resetPosition();
     }
 }

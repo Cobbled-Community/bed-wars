@@ -32,16 +32,16 @@ public class LightningGameModifier implements GameModifier {
     @Override
     public void init(BwActive game) {
         game.players().forEach(player -> {
-            ServerLevel world = game.world;
+            ServerLevel level = game.level;
 
-            LightningBolt entity = EntityType.LIGHTNING_BOLT.create(world, EntitySpawnReason.LOAD);
+            LightningBolt entity = EntityType.LIGHTNING_BOLT.create(level, EntitySpawnReason.LOAD);
             if (entity == null) {
                 return;
             }
 
             entity.snapTo(Vec3.atBottomCenterOf(player.blockPosition()));
             entity.setVisualOnly(this.cosmetic);
-            world.addFreshEntity(entity);
+            level.addFreshEntity(entity);
         });
     }
 

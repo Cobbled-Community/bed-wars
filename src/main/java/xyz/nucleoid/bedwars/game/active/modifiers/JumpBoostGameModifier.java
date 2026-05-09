@@ -18,7 +18,7 @@ public record JumpBoostGameModifier(GameTrigger trigger) implements GameModifier
 
     @Override
     public void tick(BwActive game) {
-        if (game.world.getGameTime() % 20 == 0) {
+        if (game.level.getGameTime() % 20 == 0) {
             game.players().forEach(this::addEffect);
         }
     }

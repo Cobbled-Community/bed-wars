@@ -18,8 +18,8 @@ public class BridgeEggEntity extends ThrownEgg {
 
     private final BlockState trailBlock;
 
-    public BridgeEggEntity(ServerLevel world, LivingEntity thrower, BlockState trailBlock) {
-        super(world, thrower, new ItemStack(Items.EGG));
+    public BridgeEggEntity(ServerLevel level, LivingEntity thrower, BlockState trailBlock) {
+        super(level, thrower, new ItemStack(Items.EGG));
         this.trailBlock = trailBlock;
     }
 
@@ -31,7 +31,7 @@ public class BridgeEggEntity extends ThrownEgg {
             return;
         }
 
-        var game = GameSpaceManager.get().byWorld(this.level());
+        var game = GameSpaceManager.get().byLevel(this.level());
         if (game == null) {
             this.remove(RemovalReason.DISCARDED);
             return;

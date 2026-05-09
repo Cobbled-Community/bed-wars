@@ -18,8 +18,8 @@ public final class ShopVillagerEntity extends Villager {
     private final BwActive game;
     private final Type type;
 
-    private ShopVillagerEntity(Level world, BwActive game, Type type) {
-        super(EntityType.VILLAGER, world);
+    private ShopVillagerEntity(Level level, BwActive game, Type type) {
+        super(EntityType.VILLAGER, level);
         this.game = game;
         this.type = type;
 
@@ -30,12 +30,12 @@ public final class ShopVillagerEntity extends Villager {
         this.setCustomNameVisible(true);
     }
 
-    public static ShopVillagerEntity item(Level world, BwActive game) {
-        return new ShopVillagerEntity(world, game, Type.ITEM);
+    public static ShopVillagerEntity item(Level level, BwActive game) {
+        return new ShopVillagerEntity(level, game, Type.ITEM);
     }
 
-    public static ShopVillagerEntity team(Level world, BwActive game) {
-        return new ShopVillagerEntity(world, game, Type.TEAM);
+    public static ShopVillagerEntity team(Level level, BwActive game) {
+        return new ShopVillagerEntity(level, game, Type.TEAM);
     }
 
     @Override

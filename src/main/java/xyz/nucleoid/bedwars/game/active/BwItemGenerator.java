@@ -113,14 +113,14 @@ public final class BwItemGenerator {
         return Component.translatable("text.bedwars.floating.spawn_cooldown", Component.literal(String.format("%02d:%02d", minutes, seconds)).withStyle(numberFormatting)).withStyle(ChatFormatting.GOLD);
     }
 
-    private void spawnItems(ServerLevel world, BwActive game) {
-        RandomSource random = world.random;
+    private void spawnItems(ServerLevel level, BwActive game) {
+        RandomSource random = level.getRandom();
         ItemStack stack = this.pool.sample();
 
         AABB box = this.bounds.asBox();
 
         int itemCount = 0;
-        for (ItemEntity entity : world.getEntities(EntityType.ITEM, box.inflate(1.0), entity -> true)) {
+        for (ItemEntity entity : level.getEntities(EntityType.ITEM, box.inflate(1.0), entity -> true)) {
             itemCount += entity.getItem().getCount();
         }
 
@@ -133,20 +133,20 @@ public final class BwItemGenerator {
         double y = spawnBox.minY + 0.5;
         double z = spawnBox.minZ + (spawnBox.maxZ - spawnBox.minZ) * random.nextDouble();
 
-        ItemEntity itemEntity = new ItemEntity(world, x, y, z, stack);
+        ItemEntity itemEntity = new ItemEntity(level, x, y, z, stack);
         itemEntity.setDeltaMovement(Vec3.ZERO);
 
         if (this.allowDuplication) {
-            if (this.giveItems(world, game, itemEntity)) {
+            if (this.giveItems(level, game, itemEntity)) {
                 return;
             }
         }
 
-        world.addFreshEntity(itemEntity);
+        level.addFreshEntity(itemEntity);
     }
 
-    private boolean giveItems(ServerLevel world, BwActive game, ItemEntity entity) {
-        List<ServerPlayer> players = world.getEntitiesOfClass(ServerPlayer.class, this.bounds.asBox(), game::isParticipant);
+    private boolean giveItems(ServerLevel level, BwActive game, ItemEntity entity) {
+        List<ServerPlayer> players = level.getEntitiesOfClass(ServerPlayer.class, this.bounds.asBox(), game::isParticipant);
         for (ServerPlayer player : players) {
             // Don't gen split to spectator or creative players
             if (player.getAbilities().mayfly) {

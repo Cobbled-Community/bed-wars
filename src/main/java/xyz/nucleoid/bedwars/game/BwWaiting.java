@@ -10,7 +10,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.GameType;
 import xyz.nucleoid.bedwars.game.active.BwActive;
 import xyz.nucleoid.bedwars.game.config.BwConfig;
-import xyz.nucleoid.fantasy.RuntimeWorldConfig;
+import xyz.nucleoid.fantasy.RuntimeLevelConfig;
 import xyz.nucleoid.plasmid.api.game.GameOpenContext;
 import xyz.nucleoid.plasmid.api.game.GameOpenProcedure;
 import xyz.nucleoid.plasmid.api.game.GameResult;
@@ -28,7 +28,7 @@ import xyz.nucleoid.stimuli.event.player.PlayerDamageEvent;
 import xyz.nucleoid.stimuli.event.player.PlayerDeathEvent;
 
 public final class BwWaiting {
-    private final ServerLevel world;
+    private final ServerLevel level;
     private final GameSpace gameSpace;
     private final BwMap map;
     private final BwConfig config;
@@ -37,14 +37,14 @@ public final class BwWaiting {
 
     private final TeamSelectionLobby teamSelection;
 
-    private BwWaiting(ServerLevel world, GameSpace gameSpace, BwMap map, BwConfig config, TeamSelectionLobby teamSelection) {
-        this.world = world;
+    private BwWaiting(ServerLevel level, GameSpace gameSpace, BwMap map, BwConfig config, TeamSelectionLobby teamSelection) {
+        this.level = level;
         this.gameSpace = gameSpace;
         this.map = map;
         this.config = config;
         this.teamSelection = teamSelection;
 
-        this.spawnLogic = new BwSpawnLogic(world, map);
+        this.spawnLogic = new BwSpawnLogic(level, map);
     }
 
     public static GameOpenProcedure open(GameOpenContext<BwConfig> context) {
@@ -52,16 +52,16 @@ public final class BwWaiting {
         BwMap map = new BwMapBuilder(config)
                 .create(context.server());
 
-        RuntimeWorldConfig worldConfig = new RuntimeWorldConfig()
+        RuntimeLevelConfig levelConfig = new RuntimeLevelConfig()
                 .setGenerator(map.getChunkGenerator())
                 .setDimensionType(ResourceKey.create(Registries.DIMENSION_TYPE, config.dimension()));
 
-        return context.openWithWorld(worldConfig, (activity, world) -> {
+        return context.openWithLevel(levelConfig, (activity, level) -> {
             GameWaitingLobby.addTo(activity, config.players());
 
             TeamSelectionLobby teamSelection = TeamSelectionLobby.addTo(activity, config.teams());
 
-            BwWaiting waiting = new BwWaiting(world, activity.getGameSpace(), map, config, teamSelection);
+            BwWaiting waiting = new BwWaiting(level, activity.getGameSpace(), map, config, teamSelection);
 
             activity.allow(GameRuleType.INTERACTION);
 
@@ -74,7 +74,7 @@ public final class BwWaiting {
     }
 
     private JoinAcceptorResult onPlayerOffer(JoinAcceptor offer) {
-        return offer.teleport(this.world, this.map.getCenterSpawn())
+        return offer.teleport(this.level, this.map.getCenterSpawn())
                 .thenRunForEach((player, intent) -> this.spawnLogic.respawnPlayer(player, GameType.ADVENTURE));
     }
 
@@ -82,7 +82,7 @@ public final class BwWaiting {
         Multimap<GameTeamKey, ServerPlayer> players = HashMultimap.create();
         this.teamSelection.allocate(this.gameSpace.getPlayers(), players::put);
 
-        BwActive.open(this.world, this.gameSpace, this.map, this.config, players);
+        BwActive.open(this.level, this.gameSpace, this.map, this.config, players);
 
         return GameResult.ok();
     }

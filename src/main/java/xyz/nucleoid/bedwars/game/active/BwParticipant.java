@@ -10,7 +10,7 @@ import xyz.nucleoid.plasmid.api.game.common.team.GameTeam;
 import xyz.nucleoid.plasmid.api.util.PlayerRef;
 
 public final class BwParticipant {
-    private final ServerLevel world;
+    private final ServerLevel level;
     public final PlayerRef ref;
     public final GameTeam team;
 
@@ -23,7 +23,7 @@ public final class BwParticipant {
     boolean eliminated;
 
     BwParticipant(BwActive game, ServerPlayer player, GameTeam team) {
-        this.world = player.level();
+        this.level = player.level();
         this.ref = PlayerRef.of(player);
         this.team = team;
 
@@ -38,7 +38,7 @@ public final class BwParticipant {
     }
 
     public void startRespawning(BwMap.TeamSpawn spawn) {
-        this.respawnTime = this.world.getGameTime() + BwActive.RESPAWN_TICKS;
+        this.respawnTime = this.level.getGameTime() + BwActive.RESPAWN_TICKS;
         this.respawningAt = spawn;
     }
 
@@ -53,7 +53,7 @@ public final class BwParticipant {
 
     @Nullable
     public ServerPlayer player() {
-        return this.ref.getEntity(this.world);
+        return this.ref.getEntity(this.level);
     }
 
     public boolean isAlive() {
@@ -61,6 +61,6 @@ public final class BwParticipant {
     }
 
     public boolean isOnline() {
-        return this.ref.isOnline(this.world);
+        return this.ref.isOnline(this.level);
     }
 }

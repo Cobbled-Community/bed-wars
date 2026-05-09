@@ -27,7 +27,7 @@ public final class BwPlayerLogic {
     }
 
     public void tick() {
-        long time = this.game.world.getGameTime();
+        long time = this.game.level.getGameTime();
 
         this.game.participants().forEach(participant -> {
             ServerPlayer player = participant.player();
@@ -76,7 +76,7 @@ public final class BwPlayerLogic {
             this.equipDefault(player, participant);
         }
 
-        spawn.placePlayer(player, this.game.world);
+        spawn.placePlayer(player, this.game.level);
     }
 
     // TODO: integrate enchantment system as "modifiers" to upgrades
@@ -117,7 +117,7 @@ public final class BwPlayerLogic {
         BwParticipant participant = this.game.participantBy(player);
         if (participant != null) {
             participant.startRespawning(spawn);
-            player.displayClientMessage(Component.translatable("text.bedwars.respawn_cooldown", BwActive.RESPAWN_TIME_SECONDS).withStyle(ChatFormatting.BOLD), false);
+            player.sendSystemMessage(Component.translatable("text.bedwars.respawn_cooldown", BwActive.RESPAWN_TIME_SECONDS).withStyle(ChatFormatting.BOLD), false);
         }
     }
 }

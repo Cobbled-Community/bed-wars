@@ -66,9 +66,9 @@ public final class BwTeamLogic {
 
             var bed = this.game.map.getTeamRegions(teamState.team.key()).bed();
 
-            var world = this.game.world;
+            var level = this.game.level;
             for (BlockPos pos : bed) {
-                world.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_SUPPRESS_DROPS);
+                level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_SUPPRESS_DROPS);
             }
 
             this.game.triggerModifiers(BwGameTriggers.BED_BROKEN);

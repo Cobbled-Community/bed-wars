@@ -21,13 +21,13 @@ public final class BwMapLogic {
     }
 
     public void tick() {
-        ServerLevel world = this.game.world;
+        ServerLevel level = this.game.level;
 
         for (BwItemGenerator generator : this.game.map.getItemGenerators()) {
-            generator.tick(world, this.game);
+            generator.tick(level, this.game);
         }
 
-        if (world.getGameTime() % 20 == 0) {
+        if (level.getGameTime() % 20 == 0) {
             this.game.teamsStates().forEach(team -> {
                 if (team.trapSet) {
                     if (this.tickTrap(team)) {
@@ -48,11 +48,11 @@ public final class BwMapLogic {
     }
 
     private boolean tickTrap(BwActive.TeamState teamState) {
-        ServerLevel world = this.game.world;
+        ServerLevel level = this.game.level;
         BwMap.TeamRegions regions = this.game.map.getTeamRegions(teamState.team.key());
 
         if (regions.base() != null) {
-            List<Player> entities = world.getEntities(EntityType.PLAYER, regions.base().asBox(), player -> {
+            List<Player> entities = level.getEntities(EntityType.PLAYER, regions.base().asBox(), player -> {
                 // Filter out creative mode and spectator mode players
                 if (player.getAbilities().mayfly) {
                     return false;
@@ -75,13 +75,13 @@ public final class BwMapLogic {
     }
 
     private void tickHealPool(BwActive.TeamState teamState) {
-        ServerLevel world = this.game.world;
+        ServerLevel level = this.game.level;
         BwMap.TeamRegions regions = this.game.map.getTeamRegions(teamState.team.key());
 
         if (regions.base() != null) {
             AABB box = regions.base().asBox();
 
-            List<Player> entities = world.getEntities(EntityType.PLAYER, box, player -> {
+            List<Player> entities = level.getEntities(EntityType.PLAYER, box, player -> {
                 BwParticipant participant = this.game.participantBy(player);
                 return participant != null && participant.team.equals(teamState.team);
             });

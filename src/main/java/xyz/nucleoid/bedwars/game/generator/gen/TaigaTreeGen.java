@@ -21,8 +21,8 @@ public class TaigaTreeGen implements MapGen {
 	}
 
 	@Override
-	public void generate(ServerLevelAccessor world, BlockPos pos, RandomSource random) {
-		if (world.getBlockState(pos.below()) != Blocks.GRASS_BLOCK.defaultBlockState()) return;
+	public void generate(ServerLevelAccessor level, BlockPos pos, RandomSource random) {
+		if (level.getBlockState(pos.below()) != Blocks.GRASS_BLOCK.defaultBlockState()) return;
 
 		int heightAddition = random.nextInt(4);
 
@@ -30,7 +30,7 @@ public class TaigaTreeGen implements MapGen {
 
 		BlockPos.MutableBlockPos mutable = pos.mutable();
 		for (int y = 0; y < 8 + heightAddition; y++) {
-			world.setBlock(mutable, this.log, 0);
+			level.setBlock(mutable, this.log, 0);
 			mutable.move(Direction.UP);
 		}
 
@@ -39,8 +39,8 @@ public class TaigaTreeGen implements MapGen {
 
 		for (int y = 0; y < 9; y++) {
 			GenHelper.circle(mutable.mutable(), maxRadius * radius(y / 10.f), leafPos -> {
-				if (world.getBlockState(leafPos).isAir()) {
-					world.setBlock(leafPos, this.leaves, 0);
+				if (level.getBlockState(leafPos).isAir()) {
+					level.setBlock(leafPos, this.leaves, 0);
 				}
 			});
 			mutable.move(Direction.UP);
